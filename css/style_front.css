@@ -1,0 +1,34 @@
+.rate-grade-image{
+    float: left;
+    margin-left: 4px;
+    width:35px;
+    height:34px;
+   
+}
+.dotted-margin{
+    border-top: 1px dotted green;
+    border-bottom: 1px dotted green;
+    width: 100%;
+overflow: auto;
+padding: 10px;
+    
+    
+}
+.grade-this-text{
+    float:left;
+     margin-right:30px;
+     font-weight: bold;
+    
+    
+}
+.grade-text-value{
+    margin-left:30px;
+    float: left;
+}
+.grade-details{
+    text-align: center;
+    
+    
+}
+
+
