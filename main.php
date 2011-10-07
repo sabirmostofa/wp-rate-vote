@@ -121,11 +121,11 @@ function ajax_insert_vote(){
     $user_id = $current_user -> ID;
     if($this -> get_vote($post_id,$user_id) !== null){
         $this ->update_vote($post_id, $user_id, $rating);
-        echo 'voted';
+        echo json_encode(array( 'action'=> 'updated', 'grade' => $rating ));
     }
     else{
        $this ->add_vote($post_id, $user_id,$rating);
-        echo 'nv';
+        echo json_encode(array( 'action' => 'added', 'grade' => $rating ));
     }
 
     exit;
@@ -168,6 +168,10 @@ function update_vote($post_id, $user_id, $rating){
 //      $this ->delete_vote($post_id, $user_id);
 //      $this ->add_vote($post_id, $user_id, $rating);
       
+}
+
+function update_av_table(){
+    
 }
 
 function delete_vote( $post_id, $user_id){
