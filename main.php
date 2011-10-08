@@ -121,10 +121,12 @@ function ajax_insert_vote(){
     $user_id = $current_user -> ID;
     if($this -> get_vote($post_id,$user_id) !== null){
         $this ->update_vote($post_id, $user_id, $rating);
+        $this ->update_av_table($post_id);
         echo json_encode(array( 'action'=> 'updated', 'grade' => $rating ));
     }
     else{
        $this ->add_vote($post_id, $user_id,$rating);
+       $this ->update_av_table($post_id);
         echo json_encode(array( 'action' => 'added', 'grade' => $rating ));
     }
 
@@ -170,8 +172,30 @@ function update_vote($post_id, $user_id, $rating){
       
 }
 
-function update_av_table(){
+function update_av_table($post_id){
+    global $wpdb;
     
+    $vote_count = $wpdb-> get_var("select count(*) from $this->table where post_id='$post_id'");
+    $av_rating = $wpdb -> get_var("select avg(grade) from $this->table where post_id='$post_id'");
+    $date = date("Y:m:d H:i:s");
+    
+    if($this-> get_vote_count($post_id))
+        $wpdb-> update( $this->table_av, array('average_grade' => $av_rating, 'grade_count' => $vote_count, 'last_added' => $date), array('post_id' => $post_id) );    
+    else
+        $wpdb-> insert( $this->table_av, array('post_id'=>$post_id ,'average_grade' => $av_rating, 'grade_count' => $vote_count), array('%d', '%f', '%d') );
+        
+    
+}
+
+function get_av_grade($post_id){
+    global $wpdb;
+    return $wpdb -> get_var("select average_grade from $this->table_av post_id='$post_id'");
+    
+}
+
+function get_vote_count($post_id){
+    global $wpdb;
+    return $wpdb -> get_var("select grade_count from $this->table_av where post_id='$post_id'");
 }
 
 function delete_vote( $post_id, $user_id){

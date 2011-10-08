@@ -2,6 +2,7 @@ jQuery(document).ready(function($){
     
     var grades_val= new Array('Awesome!', 'Pretty Good', 'Just Ok', 'Pretty Lame', 'Worthless' );
        var common ={
+           updating: false,
            gray_all: function(){
             $('.rate-grade-image a img').each(function(){
                 var src =  $(this).attr('src');
@@ -24,7 +25,14 @@ jQuery(document).ready(function($){
                 });
                
            }
-       } 
+       }
+       
+       //initialize variable
+            $('.rate-grade-image a img').each(function(){
+            if( $(this).attr('src').match('color'))                 
+                    common.updating = true;              
+            
+        })
    
     
     $('.rate-grade-image a img').mouseover(function(e){
@@ -55,21 +63,24 @@ jQuery(document).ready(function($){
     $('.rate-grade-image a img').click(function(e){
         e.preventDefault();
         var action = 'submit-wpvote';
+       var hovered_img = $(this).attr('src'); 
         
         var selVal =$(this).attr('class').match(/\d/);
         var to_update = false;
         $('.rate-grade-image a img').each(function(){
             if( $(this).attr('src').match('color')) 
-                to_update = true;
+                if($(this).attr('src') != hovered_img)
+                    to_update = true;
                 
             
         })
        
 //        alert(wpvrSettings.post_id );
-      
-      if(to_update)
-          var ans = confirm("Are you sure you want to update the grade?")
-        if(ans == true)
+      var ans = true;
+      if(common.updating)
+           ans = confirm("Are you sure you want to update the grade?");
+       
+        if(ans == false) return;
         $.ajax({
             type :  "post",
             url : wpvrSettings.ajaxurl,
@@ -87,6 +98,7 @@ jQuery(document).ready(function($){
                     case 'added':
                       common.gray_all();
                       common.color_src(data.grade);
+                      common.updating = true;
                      break;
                     case 'updated':
                         common.gray_all();
