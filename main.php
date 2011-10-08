@@ -70,7 +70,7 @@ class wpVoteRate{
             if(is_single()||is_page()){
                 $vote_val = $this->get_vote($post_id, $user_id) ;
                 $grade_user_count=$this ->get_vote_count($post_id);
-                $grade_av_image = $this -> image_dir . $this ->get_av_image($post_id);
+                $grade_av_image = $this ->get_av_image($post_id);
 
             
                
@@ -84,7 +84,9 @@ class wpVoteRate{
                        
                     
                                                         $extra_content=<<<HDS
-   <div class='grade-details'><span id='grade-users-count'>$grade_user_count</span> User(s) graded this </div>
+   <div class='grade-details'><span id='grade-users-count'>$grade_user_count</span> User(s) graded this
+    <img id="av-grade-image" src="$grade_av_image"/>                
+    </div>
    <div class='dotted-margin'>       
     <div class='grade-this-text'>Grade this product ... </div> $divs
         <div class="grade-text-value"></div>
@@ -123,12 +125,16 @@ function ajax_insert_vote(){
     if($this -> get_vote($post_id,$user_id) !== null){
         $this ->update_vote($post_id, $user_id, $rating);
         $this ->update_av_table($post_id);
-        echo json_encode(array( 'action'=> 'updated', 'grade' => $rating ));
+        $vote_count = $this ->get_vote_count($post_id);
+        $new_av_image = $this ->get_av_image($post_id);
+        echo json_encode(array( 'action'=> 'updated', 'grade' => $rating,'count' => $vote_count, 'image' => $new_av_image  ));
     }
     else{
        $this ->add_vote($post_id, $user_id,$rating);
        $this ->update_av_table($post_id);
-        echo json_encode(array( 'action' => 'added', 'grade' => $rating ));
+       $vote_count = $this ->get_vote_count($post_id);
+        $new_av_image = $this ->get_av_image($post_id);
+        echo json_encode(array( 'action' => 'added', 'grade' => $rating,'count' => $vote_count, 'image' => $new_av_image ));
     }
 
     exit;
@@ -229,7 +235,7 @@ function get_av_image($post_id){
         $image = strtolower ($grade).'_all.png';
     else
         $image = ($grade[1] == '+')? strtolower ($grade[0]).'_plus_all.png': strtolower ($grade[0]).'_minus_all.png';
-    return $image;
+    return $this -> image_dir .$image;
 }
     
     function create_table(){

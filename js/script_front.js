@@ -99,10 +99,14 @@ jQuery(document).ready(function($){
                       common.gray_all();
                       common.color_src(data.grade);
                       common.updating = true;
+                      $('#grade-users-count').text(data.count);
+                      $('#av-grade-image').attr('src', data.image);
                      break;
                     case 'updated':
                         common.gray_all();
                         common.color_src(data.grade);
+                       $('#grade-users-count').text(data.count);
+                      $('#av-grade-image').attr('src', data.image);
                      break;
 
                 }
