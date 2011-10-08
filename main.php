@@ -30,6 +30,7 @@ class wpVoteRate{
              add_action('wp_print_styles' , array($this,'front_css'));       
              register_activation_hook(__FILE__, array($this, 'create_table'));
              add_action( 'wp_ajax_submit-wpvote', array($this,'ajax_insert_vote'));
+             add_action( 'wp_ajax_nopriv_submit-wpvote', array($this,'ajax_insert_vote'));
              
              
              
@@ -122,19 +123,26 @@ function ajax_insert_vote(){
     $post_id = $_POST['post_id'];
     $current_user = wp_get_current_user();
     $user_id = $current_user -> ID;
+    $login_url = wp_login_url(get_permalink($post_id));
+
+    if($user_id == 0){
+                echo json_encode( array( 'action'=> 'none',  'user'=> $user_id, 'login' => $login_url   ));
+                exit;
+
+    }
     if($this -> get_vote($post_id,$user_id) !== null){
         $this ->update_vote($post_id, $user_id, $rating);
         $this ->update_av_table($post_id);
         $vote_count = $this ->get_vote_count($post_id);
         $new_av_image = $this ->get_av_image($post_id);
-        echo json_encode(array( 'action'=> 'updated', 'grade' => $rating,'count' => $vote_count, 'image' => $new_av_image  ));
+        echo json_encode(array( 'action'=> 'updated', 'grade' => $rating,'count' => $vote_count, 'image' => $new_av_image, 'user'=> $user_id  ));
     }
     else{
        $this ->add_vote($post_id, $user_id,$rating);
        $this ->update_av_table($post_id);
        $vote_count = $this ->get_vote_count($post_id);
         $new_av_image = $this ->get_av_image($post_id);
-        echo json_encode(array( 'action' => 'added', 'grade' => $rating,'count' => $vote_count, 'image' => $new_av_image ));
+        echo json_encode(array( 'action' => 'added', 'grade' => $rating,'count' => $vote_count, 'image' => $new_av_image, 'user'=> $user_id  ));
     }
 
     exit;
@@ -272,7 +280,7 @@ function get_av_image($post_id){
 	function exists_in_table($id){
 	global $wpdb;
 	//$wpdb = new wpdb( DB_USER, DB_PASSWORD, DB_NAME, DB_HOST );
-	$result = $wpdb->get_results( "SELECT id FROM $this->table  where series_id='$id'" );
+	$result = $wpdb->get_results( "SELECT id FROM $this->table  where post_id='$id'" );
 	if(empty($result))
 		return false;
 

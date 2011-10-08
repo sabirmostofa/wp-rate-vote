@@ -92,9 +92,13 @@ jQuery(document).ready(function($){
                  'post_id':  wpvrSettings.post_id  
             },
             success :  function(data){
-//                $('#colophon').html(data);          
-                
-                switch(data.action){
+//                $('#colophon').html(data);    
+//               alert(data);
+                 if(data.action == 'none'){
+                        window.location.href = data.login;
+                        return;
+             }
+                switch(data.action){                  
                     case 'added':
                       common.gray_all();
                       common.color_src(data.grade);
