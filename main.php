@@ -16,7 +16,7 @@ class wpVoteRate{
     public $table ='';
     public $table_av ='';
     public $image_dir='';
-    public $grades = array('A+', 'A',' A-',' B+', 'B', 'B-', 'C+', 'C','C-', 'D+','D', 'D-', 'F');
+    public $grades = array( 'A',' A-',' B+', 'B', 'B-', 'C+', 'C','C-', 'D+','D', 'D-', 'F');
     public $grades_to_show = array( 'A', 'B',  'C', 'D', 'F');
 	
 	
@@ -69,7 +69,8 @@ class wpVoteRate{
             $cd = $this->get_vote($post_id, $user_id);
             if(is_single()||is_page()){
                 $vote_val = $this->get_vote($post_id, $user_id) ;
-                $grade_user_count='';
+                $grade_user_count=$this ->get_vote_count($post_id);
+                $grade_av_image = $this -> image_dir . $this ->get_av_image($post_id);
 
             
                
@@ -189,7 +190,7 @@ function update_av_table($post_id){
 
 function get_av_grade($post_id){
     global $wpdb;
-    return $wpdb -> get_var("select average_grade from $this->table_av post_id='$post_id'");
+    return $wpdb -> get_var("select average_grade from $this->table_av where post_id='$post_id'");
     
 }
 
@@ -202,6 +203,33 @@ function delete_vote( $post_id, $user_id){
     global $wpdb;
     $wpdb -> query("delete from $this->table where post_id='$post_id' and user_id='$user_id' ");
     
+}
+
+function determine_grade($grade){
+    if($grade == 0)$val = 'A';
+    if($grade > 0 && $grade <= 0.5)$val='A-';
+    if($grade > 0.5 && $grade < 1)$val='B+';
+    if($grade == 1)$val = 'B';
+    if($grade > 1 && $grade <= 1.5)$val='B-';
+    if($grade > 1.5 && $grade < 2)$val='C+';
+    if($grade == 2)$val = 'C';
+    if($grade > 2 && $grade <= 2.5)$val='C-';
+    if($grade > 2.5 && $grade < 3)$val='D+';
+    if($grade == 3)$val = 'D';
+    if($grade > 3 && $grade <= 3.75)$val='D-';
+    if($grade == 4)$val = 'F';
+    return $val;
+    
+    
+}
+
+function get_av_image($post_id){
+    $grade = $this ->determine_grade( $this->get_av_grade($post_id));
+    if(strlen($grade) == 1)
+        $image = strtolower ($grade).'_all.png';
+    else
+        $image = ($grade[1] == '+')? strtolower ($grade[0]).'_plus_all.png': strtolower ($grade[0]).'_minus_all.png';
+    return $image;
 }
     
     function create_table(){
