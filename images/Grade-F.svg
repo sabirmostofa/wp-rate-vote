@@ -27,7 +27,7 @@
      inkscape:pageshadow="2"
      inkscape:zoom="2.8284271"
      inkscape:cx="218.33066"
-     inkscape:cy="327.76738"
+     inkscape:cy="440.90447"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -667,7 +667,10 @@
     </g>
     <g
        id="g3892"
-       transform="translate(4.8357862,-71.000523)">
+       transform="translate(4.8357862,-71.000523)"
+       inkscape:export-filename="/home/s/htdocs/wordpress/wp-content/plugins/wp-vote-rate/images/f_all.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
       <path
          sodipodi:type="arc"
          style="fill:#1a1a1a;fill-opacity:1;stroke:none"
