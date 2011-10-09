@@ -63,6 +63,7 @@ class wpVoteRate{
 
 
         function filter_content($content){
+            
             global $wpdb, $post;
             $post_id = $post ->ID;
              $current_user = wp_get_current_user();
@@ -71,6 +72,7 @@ class wpVoteRate{
             if(is_single()||is_page()){
                 $vote_val = $this->get_vote($post_id, $user_id) ;
                 $grade_user_count=$this ->get_vote_count($post_id);
+                $grade_user_count = ($grade_user_count === null)? 0: $grade_user_count;
                 $grade_av_image = $this ->get_av_image($post_id);
 
             
@@ -238,7 +240,9 @@ function determine_grade($grade){
 }
 
 function get_av_image($post_id){
-    $grade = $this ->determine_grade( $this->get_av_grade($post_id));
+    $av_grade = $this->get_av_grade($post_id);
+    if($av_grade === null) return $this -> image_dir.'none_all.png'  ;
+    $grade = $this ->determine_grade( $av_grade);
     if(strlen($grade) == 1)
         $image = strtolower ($grade).'_all.png';
     else
