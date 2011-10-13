@@ -11,6 +11,7 @@
     width: 100%;
 overflow: auto;
 padding: 10px;
+margin-bottom:  10px;
     
     
 }
@@ -30,5 +31,14 @@ padding: 10px;
     
     
 }
+pre{
+background: none repeat scroll 0 0 #F4F4F4;
+    font: 13px/1.5 "Courier 10 Pitch",Courier,monospace;
+    margin-bottom: 1.625em;
+    overflow: auto;
+    padding: 0.75em 1.625em;
+}
 
-
+.copy-image-src{
+    margin: 10px 0;
+}

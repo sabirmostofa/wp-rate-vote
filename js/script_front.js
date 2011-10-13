@@ -1,5 +1,24 @@
 jQuery(document).ready(function($){
     
+//    //test
+//    $('a').click(function(e){
+//        e.preventDefault();
+//            $.ajax({
+//            type :  "post",
+//            url : wpvrSettings.ajaxurl,
+//            timeout : 5000,        
+//            data : {
+//                'action' : 'set_user'
+//            
+//            },
+//            success :  function(data){
+//                alert(data);
+//            }
+//            
+//    } )
+//    
+//    });
+    
     var grades_val= new Array('Awesome!', 'Pretty Good', 'Just Ok', 'Pretty Lame', 'Worthless' );
        var common ={
            updating: false,
@@ -95,6 +114,7 @@ jQuery(document).ready(function($){
 //                $('#colophon').html(data);    
 //               alert(data);
                  if(data.action == 'none'){
+                     alert("You need to log in to grade this topic");
                         window.location.href = data.login;
                         return;
              }

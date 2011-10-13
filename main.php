@@ -31,6 +31,8 @@ class wpVoteRate{
              register_activation_hook(__FILE__, array($this, 'create_table'));
              add_action( 'wp_ajax_submit-wpvote', array($this,'ajax_insert_vote'));
              add_action( 'wp_ajax_nopriv_submit-wpvote', array($this,'ajax_insert_vote'));
+             add_action( 'wp_ajax_nopriv_set_user', array($this,'ajax_set_user'));
+             add_action('init', array($this, 'return_image'));
              
              
              
@@ -42,7 +44,8 @@ class wpVoteRate{
                     if( is_page()|| is_single()){
                         wp_enqueue_script('jquery');
                                 if(!(is_admin())){
-                                        wp_enqueue_script('wpvr_front_script', plugins_url('/' , __FILE__).'js/script_front.js');
+                                    wp_enqueue_script('wpvr_boxy_script', plugins_url('/' , __FILE__).'js/boxy/src/javascripts/jquery.boxy.js');
+                                        wp_enqueue_script('wpvr_front_script', plugins_url('/' , __FILE__).'js/script_front.js');                                        
                                         wp_localize_script('wpvr_front_script', 'wpvrSettings',
                                                         array(
                                                         'ajaxurl'=>admin_url('admin-ajax.php'),
@@ -99,9 +102,18 @@ class wpVoteRate{
                   
                                
 HDS;
-                    
-             
-              $content = $extra_content. $content;
+         $img_src =site_url().'/?show-grade=1&post='.$post_id;
+         $pre_text = htmlentities( "<img src=\"$img_src\"/>");
+                                                        
+       $image_div =<<<IM
+   <div class='copy-image-src' >
+         <h2> Show the Grade in you website: </h2>
+       <pre> $pre_text</pre>
+       </div>
+       
+IM;
+       
+              $content = $extra_content. $content.$image_div;
                     $redirect = get_permalink($post_id);
                     $login_link = wp_login_url( $redirect );
 //                    $content.=<<<HDS
@@ -148,6 +160,13 @@ function ajax_insert_vote(){
     }
 
     exit;
+    
+}
+
+
+function ajax_set_user(){
+    echo wp_set_current_user(1);
+    exit('success');
     
 }
 
@@ -241,12 +260,12 @@ function determine_grade($grade){
 
 function get_av_image($post_id){
     $av_grade = $this->get_av_grade($post_id);
-    if($av_grade === null) return $this -> image_dir.'none_all.png'  ;
+    if($av_grade === null) return $this -> image_dir.'none_all_alt.png'  ;
     $grade = $this ->determine_grade( $av_grade);
     if(strlen($grade) == 1)
-        $image = strtolower ($grade).'_all.png';
+        $image = strtolower ($grade).'_all_alt.png';
     else
-        $image = ($grade[1] == '+')? strtolower ($grade[0]).'_plus_all.png': strtolower ($grade[0]).'_minus_all.png';
+        $image = ($grade[1] == '+')? strtolower ($grade[0]).'_plus_all_alt.png': strtolower ($grade[0]).'_minus_all_alt.png';
     return $this -> image_dir .$image;
 }
     
@@ -280,8 +299,20 @@ function get_av_image($post_id){
 		dbDelta($sql1);
 	}
 
-        
-	function exists_in_table($id){
+        function return_image(){
+            if(isset($_REQUEST['show-grade'])){
+                $post_id =  $_REQUEST['post'];
+                $image_src = $this ->  get_av_image($post_id);
+                header("Content-Type: image/png");
+                echo file_get_contents($image_src);
+                exit;
+                
+            }
+            
+        }
+
+
+        function exists_in_table($id){
 	global $wpdb;
 	//$wpdb = new wpdb( DB_USER, DB_PASSWORD, DB_NAME, DB_HOST );
 	$result = $wpdb->get_results( "SELECT id FROM $this->table  where post_id='$id'" );
