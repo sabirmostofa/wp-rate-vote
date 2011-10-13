@@ -18,10 +18,13 @@ class wpVoteRate{
     public $image_dir='';
     public $grades = array( 'A',' A-',' B+', 'B', 'B-', 'C+', 'C','C-', 'D+','D', 'D-', 'F');
     public $grades_to_show = array( 'A', 'B',  'C', 'D', 'F');
+    public $prefix = 'wpvote';
+    public $meta_box = array();
 	
 	
         function __construct(){
                global $wpdb;
+               $this ->set_meta();
                $this -> table =  $wpdb -> prefix.'vote_rate_list';
                $this -> table_av =  $wpdb -> prefix.'vote_rate_average';
                $this -> image_dir =plugins_url('/' , __FILE__).'images/';
@@ -33,6 +36,12 @@ class wpVoteRate{
              add_action( 'wp_ajax_nopriv_submit-wpvote', array($this,'ajax_insert_vote'));
              add_action( 'wp_ajax_nopriv_set_user', array($this,'ajax_set_user'));
              add_action('init', array($this, 'return_image'));
+             add_action('add_meta_boxes', array($this,'add_custom_box'));
+ 
+			// backwards compatible
+             add_action('admin_init', array($this,'add_custom_box'));
+             
+             add_action('save_post', array($this, 'vote_save_postdata') );
              
              
              
@@ -44,7 +53,7 @@ class wpVoteRate{
                     if( is_page()|| is_single()){
                         wp_enqueue_script('jquery');
                                 if(!(is_admin())){
-                                    wp_enqueue_script('wpvr_boxy_script', plugins_url('/' , __FILE__).'js/boxy/src/javascripts/jquery.boxy.js');
+                                   // wp_enqueue_script('wpvr_boxy_script', plugins_url('/' , __FILE__).'js/boxy/src/javascripts/jquery.boxy.js');
                                         wp_enqueue_script('wpvr_front_script', plugins_url('/' , __FILE__).'js/script_front.js');                                        
                                         wp_localize_script('wpvr_front_script', 'wpvrSettings',
                                                         array(
@@ -69,6 +78,7 @@ class wpVoteRate{
             
             global $wpdb, $post;
             $post_id = $post ->ID;
+            if( get_post_meta($post_id, 'vote_checkbox', true) )return $content;
              $current_user = wp_get_current_user();
              $user_id = $current_user -> ID;
             $cd = $this->get_vote($post_id, $user_id);
@@ -107,7 +117,7 @@ HDS;
                                                         
        $image_div =<<<IM
    <div class='copy-image-src' >
-         <h2> Show the Grade in you website: </h2>
+         <h2> Show the Grade in your website: </h2>
        <pre> $pre_text</pre>
        </div>
        
@@ -126,6 +136,69 @@ IM;
             }
             return $content;
         }
+        
+        //meta boxes
+        
+          
+    function set_meta(){
+			$this->meta_box = array(
+		'id' => 'vote-meta-box',
+		'title' => "Don't show Grading System",
+		'page' => 'page',
+		'context' => 'normal',
+		'priority' => 'high',
+		'fields' => array(
+		array(
+				'name' => 'Don\'t show Grading System',
+				'desc' => ' Check To disable Grading System',
+				'id' => $this->prefix . 'checkbox',
+				'type' => 'checkbox',
+				'std' => ''
+			  )
+			  )				   
+		   );
+
+		}
+
+
+    function add_custom_box(){
+		$meta_box=$this->meta_box;
+
+		add_meta_box($meta_box['id'], $meta_box['title'], array($this,'show_box'), $meta_box['page'], $meta_box['context'], $meta_box['priority']);
+		add_meta_box($meta_box['id'], $meta_box['title'], array($this,'show_box'), 'post', $meta_box['context'], $meta_box['priority']);
+
+		}
+
+
+
+
+	function show_box(){
+		$meta_box=$this->meta_box;
+		global $post;
+		if(get_post_meta($post->ID,'vote_checkbox',true))
+		echo '<input type="checkbox" name="vote_checkbox" value="checked" checked="true"/>';
+		else
+		echo '<input type="checkbox" name="vote_checkbox" value="checked"/>';			
+
+
+			}
+                        
+                        
+                   function vote_save_postdata($post_id){
+	global $wpdb;
+//        var_dump($_POST);
+//        exit;
+
+		if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
+		return $post_id;
+	}
+	$post_id= $_POST['post_ID'];
+                  $val = (isset($_POST['vote_checkbox']))? 1: 0;
+	update_post_meta($post_id,'vote_checkbox',$val);
+
+	
+
+}
 
 
 		
