@@ -3,8 +3,13 @@
     margin-left: 4px;
     width:35px;
     height:34px;
-   
+    padding: 0 !important;   
 }
+
+.rate-grade-image img {
+border: 0px !important;
+}
+
 .dotted-margin{
     border-top: 1px dotted green;
     border-bottom: 1px dotted green;

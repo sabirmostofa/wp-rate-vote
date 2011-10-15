@@ -34,6 +34,8 @@ class wpVoteRate{
              register_activation_hook(__FILE__, array($this, 'create_table'));
              add_action( 'wp_ajax_submit-wpvote', array($this,'ajax_insert_vote'));
              add_action( 'wp_ajax_nopriv_submit-wpvote', array($this,'ajax_insert_vote'));
+             add_action( 'wp_ajax_get_image_src', array($this,'ajax_get_image'));
+             add_action( 'wp_ajax_nopriv_get_image_src', array($this,'ajax_get_image'));
              add_action( 'wp_ajax_nopriv_set_user', array($this,'ajax_set_user'));
              add_action('init', array($this, 'return_image'));
              add_action('add_meta_boxes', array($this,'add_custom_box'));
@@ -118,7 +120,8 @@ HDS;
        $image_div =<<<IM
    <div class='copy-image-src' >
          <h2> Show the Grade in your website: </h2>
-       <pre> $pre_text</pre>
+         <input type="button" value="Show Image Source" id="show-image-button"/>
+       <div id="show-var-image"></div>
        </div>
        
 IM;
@@ -382,6 +385,17 @@ function get_av_image($post_id){
                 
             }
             
+        }
+        
+        function ajax_get_image(){
+            $post_id = $_POST['post_id'];
+            $time = time();
+            $img_src =site_url().'/?show-grade=1&post='.$post_id.'&ts='.$time;
+         //$pre_text = htmlentities( "<img src=\"$img_src\"/>");
+            
+            $a= array('data' => $img_src);
+            echo json_encode($a);
+            exit;
         }
 
 

@@ -1,23 +1,25 @@
 jQuery(document).ready(function($){
     
-//    //test
-//    $('a').click(function(e){
-//        e.preventDefault();
-//            $.ajax({
-//            type :  "post",
-//            url : wpvrSettings.ajaxurl,
-//            timeout : 5000,        
-//            data : {
-//                'action' : 'set_user'
-//            
-//            },
-//            success :  function(data){
-//                alert(data);
-//            }
-//            
-//    } )
-//    
-//    });
+    //test
+    $('#show-image-button').click(function(e){        
+            $.ajax({
+            type :  "post",
+            url : wpvrSettings.ajaxurl,
+            timeout : 5000,
+            dataType : 'json',
+            data : {
+                'action' : 'get_image_src',
+                'post_id':  wpvrSettings.post_id
+            
+            },
+            success :  function(data){
+                
+                $('#show-var-image').text(data.data);
+            }
+            
+    } )
+    
+    });
     
     var grades_val= new Array('Awesome!', 'Pretty Good', 'Just Ok', 'Pretty Lame', 'Worthless' );
        var common ={
