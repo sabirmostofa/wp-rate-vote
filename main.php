@@ -378,6 +378,10 @@ function get_av_image($post_id){
         function return_image(){
             if(isset($_REQUEST['show-grade'])){
                 $post_id =  $_REQUEST['post'];
+                $ts = $_REQUEST['ts'];
+                if(!$this -> can_return_image($post_id, $ts))
+                        exit;
+                
                 $image_src = $this ->  get_av_image($post_id);
                 header("Content-Type: image/png");
                 echo file_get_contents($image_src);
@@ -387,9 +391,28 @@ function get_av_image($post_id){
             
         }
         
+        function can_return_image($post_id,$ts){
+             $meta_array = get_post_meta($post_id,'vote_image_timestamps',true);
+             if(in_array($ts, $meta_array))
+                     return true;
+             return;
+            
+            
+        }
+        
         function ajax_get_image(){
             $post_id = $_POST['post_id'];
             $time = time();
+            $meta_array = get_post_meta($post_id,'vote_image_timestamps',true);
+            $to_add = $time;
+            if(!is_array($meta_array)){
+                update_post_meta($post_id,'vote_image_timestamps', array($to_add) );
+                
+            }else{
+                $meta_array[]=$to_add;
+                update_post_meta($post_id,'vote_image_timestamps', $meta_array );
+                
+            }
             $img_src =site_url().'/?show-grade=1&post='.$post_id.'&ts='.$time;
          //$pre_text = htmlentities( "<img src=\"$img_src\"/>");
             

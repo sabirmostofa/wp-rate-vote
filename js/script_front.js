@@ -13,8 +13,8 @@ jQuery(document).ready(function($){
             
             },
             success :  function(data){
-                
-                $('#show-var-image').text(data.data);
+                $('#show-image-button').hide();
+                $('#show-var-image').text(data.data).hide().fadeIn('slow');
             }
             
     } )
