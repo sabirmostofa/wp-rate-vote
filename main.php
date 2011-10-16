@@ -195,6 +195,7 @@ IM;
 		if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
 		return $post_id;
 	}
+        if(isset($_POST['post_ID']))
 	$post_id= $_POST['post_ID'];
                   $val = (isset($_POST['vote_checkbox']))? 1: 0;
 	update_post_meta($post_id,'vote_checkbox',$val);
