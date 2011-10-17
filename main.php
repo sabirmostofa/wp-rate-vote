@@ -381,19 +381,18 @@ function get_av_image($post_id){
                 $post_id =  $_REQUEST['post'];
                 $ts = $_REQUEST['ts'];
                 if(!$this -> can_return_image($post_id, $ts))
-                        exit;
-                
+                        exit;                
                 $post_title = get_the_title($post_id);
-                
-                $title_len = strlen($post_title) *10 +50;
-                $title_len =($title_len > 800)? 800: $title_len;
-                
+                //calculating image length 50 image width 95 timestamp width
+                $title_len = strlen($post_title) *10 +50+95;
+                $title_len =($title_len > 800)? 800: $title_len;                
                 $image_src = $this ->  get_av_image($post_id);
                 
                 $im = @imagecreatefrompng($image_src);
                 $im_base = @imagecreate($title_len,50);
                 $textcolor = imagecolorallocate($im, 0, 0, 255);
-                imagestring($im_base, 5, 55, 10, $post_title, $textcolor);
+                imagestring($im_base, 5, 55, 10, $ts, $textcolor);
+                imagestring($im_base, 5, 150, 10, $post_title, $textcolor);
                 imagecopymerge($im_base, $im, 10, 0, 0, 0, 35, 34, 100);
 
                 // Write the string at the top left
