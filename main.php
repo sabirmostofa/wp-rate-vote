@@ -380,20 +380,24 @@ function get_av_image($post_id){
             if(isset($_REQUEST['show-grade'])){
                 $post_id =  $_REQUEST['post'];
                 $ts = $_REQUEST['ts'];
+                $a= timezone_name_from_abbr('cst');
+                date_default_timezone_set($a);
+                $date = date("F j, Y, g:i a", $ts);
+                $date = $date . ' CST';
                 if(!$this -> can_return_image($post_id, $ts))
                         exit;                
                 $post_title = get_the_title($post_id);
                 //calculating image length 50 image width 95 timestamp width
-                $title_len = strlen($post_title) *10 +50+95;
+                $title_len = strlen($post_title) *10 +50+220;
                 $title_len =($title_len > 800)? 800: $title_len;                
                 $image_src = $this ->  get_av_image($post_id);
                 
                 $im = @imagecreatefrompng($image_src);
                 $im_base = @imagecreate($title_len,50);
                 $textcolor = imagecolorallocate($im, 0, 0, 255);
-                imagestring($im_base, 5, 55, 10, $ts, $textcolor);
-                imagestring($im_base, 5, 150, 10, $post_title, $textcolor);
-                imagecopymerge($im_base, $im, 10, 0, 0, 0, 35, 34, 100);
+                imagestring($im_base, 3, 10, 10, $date, $textcolor);
+                imagestring($im_base, 5, 270, 10, $post_title, $textcolor);
+                imagecopymerge($im_base, $im, 225, 0, 0, 0, 35, 34, 100);
 
                 // Write the string at the top left
                // imagestring($im, 5, 0, 0, $post_title, $textcolor);
