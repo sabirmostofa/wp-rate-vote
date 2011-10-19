@@ -382,22 +382,31 @@ function get_av_image($post_id){
                 $ts = $_REQUEST['ts'];
                 $a= timezone_name_from_abbr('cst');
                 date_default_timezone_set($a);
-                $date = date("F j, Y, g:i a", $ts);
+                $date = date("m:d:y");
                 $date = $date . ' CST';
                 if(!$this -> can_return_image($post_id, $ts))
                         exit;                
                 $post_title = get_the_title($post_id);
+                $first_part = substr($post_title, 0, 30);
+                if(strlen($post_title) > 30){                   
+                   $second_part = substr($post_title, 30, strlen($post_title));
+                }
                 //calculating image length 50 image width 95 timestamp width
                 $title_len = strlen($post_title) *10 +50+220;
                 $title_len =($title_len > 800)? 800: $title_len;                
                 $image_src = $this ->  get_av_image($post_id);
-                
+                $im_src_base= plugins_url('/' , __FILE__).'images/test-card3.png';
+                $im_base = @imagecreatefrompng($im_src_base);
                 $im = @imagecreatefrompng($image_src);
-                $im_base = @imagecreate($title_len,50);
-                $textcolor = imagecolorallocate($im, 0, 0, 255);
-                imagestring($im_base, 3, 10, 10, $date, $textcolor);
-                imagestring($im_base, 5, 270, 10, $post_title, $textcolor);
-                imagecopymerge($im_base, $im, 225, 0, 0, 0, 35, 34, 100);
+                //$im_base = @imagecreate($title_len,50);
+                $textcolor = imagecolorallocate($im, 255, 0, 0);
+                imagestring($im_base, 3, 300, 35, $date, $textcolor);
+                imagestring($im_base, 5, 105, 70, $first_part, $textcolor);
+                if(isset ($second_part)){
+                    $second_part = (strlen($second_part)>38)? substr($second_part, 0,38) .'..':$second_part;
+                imagestring($im_base, 5, 10, 85, $second_part, $textcolor);
+                }
+                imagecopymerge($im_base, $im, 110, 20, 0, 0, 35, 34, 100);
 
                 // Write the string at the top left
                // imagestring($im, 5, 0, 0, $post_title, $textcolor);
