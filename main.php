@@ -375,17 +375,37 @@ function get_av_image($post_id){
 		dbDelta($sql);
 		dbDelta($sql1);
 	}
+        
+        // return cached images or generate a new one
 
         function return_image(){
             if(isset($_REQUEST['show-grade'])){
                 $post_id =  $_REQUEST['post'];
                 $ts = $_REQUEST['ts'];
+                
+                 if(!$this -> can_return_image($post_id, $ts))
+                        exit; 
+                $cache_dir = dirname( __FILE__).'/images';
+                $cache_file = dirname( __FILE__).'/images/cached/'.$post_id.'.png';
+                
+                if(  !is_dir($cache_dir) ) {
+                    mkdir ($cache_dir);                
+                    exit($cache_dir);
+                
+                }
+                $cachetime = 30; 
+                
+                if( file_exists($cache_file) && (time() - $cachetime)  < filemtime($cache_file) ){
+                    header("Content-Type: image/png");
+                   echo file_get_contents($cache_file);
+                   exit;
+                }
+                
                 $a= timezone_name_from_abbr('cst');
                 date_default_timezone_set($a);
-                $date = date("m:d:y");
+                $date = date("H:i:s");
                 $date = $date . ' CST';
-                if(!$this -> can_return_image($post_id, $ts))
-                        exit;                
+                              
                 $post_title = get_the_title($post_id);
                 $first_part = substr($post_title, 0, 30);
                 if(strlen($post_title) > 30){                   
@@ -412,8 +432,9 @@ function get_av_image($post_id){
                // imagestring($im, 5, 0, 0, $post_title, $textcolor);
                // imagepng($im);
                 //echo file_get_contents($image_src);
+                 imagepng($im_base,$cache_file);
                 header("Content-Type: image/png");
-                imagepng($im_base);
+               echo file_get_contents($cache_file);                
                 exit;
                 
             }
