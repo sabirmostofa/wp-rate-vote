@@ -394,7 +394,7 @@ function get_av_image($post_id){
                     exit($cache_dir);
                 
                 }
-                $cachetime =1; 
+                $cachetime =1800; 
                 
                 if( file_exists($cache_file) && (time() - $cachetime)  < filemtime($cache_file) ){
                 wp_redirect($http_cache_file);
