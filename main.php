@@ -37,7 +37,7 @@ class wpVoteRate{
              add_action( 'wp_ajax_get_image_src', array($this,'ajax_get_image'));
              add_action( 'wp_ajax_nopriv_get_image_src', array($this,'ajax_get_image'));
              add_action( 'wp_ajax_nopriv_set_user', array($this,'ajax_set_user'));
-             add_action('init', array($this, 'return_image'));
+             add_action('plugins_loaded', array($this, 'return_image'));
              add_action('add_meta_boxes', array($this,'add_custom_box'));
  
 			// backwards compatible
@@ -387,17 +387,17 @@ function get_av_image($post_id){
                         exit; 
                 $cache_dir = dirname( __FILE__).'/images';
                 $cache_file = dirname( __FILE__).'/images/cached/'.$post_id.'.png';
+                $http_cache_file = plugins_url('/', __FILE__).'/images/cached/'.$post_id.'.png';
                 
                 if(  !is_dir($cache_dir) ) {
                     mkdir ($cache_dir);                
                     exit($cache_dir);
                 
                 }
-                $cachetime = 30; 
+                $cachetime =1; 
                 
                 if( file_exists($cache_file) && (time() - $cachetime)  < filemtime($cache_file) ){
-                    header("Content-Type: image/png");
-                   echo file_get_contents($cache_file);
+                wp_redirect($http_cache_file);
                    exit;
                 }
                 
@@ -406,7 +406,8 @@ function get_av_image($post_id){
                 $date = date("H:i:s");
                 $date = $date . ' CST';
                               
-                $post_title = get_the_title($post_id);
+                $post_title = wp_kses_decode_entities( get_the_title($post_id));
+                
                 $first_part = substr($post_title, 0, 30);
                 if(strlen($post_title) > 30){                   
                    $second_part = substr($post_title, 30, strlen($post_title));
