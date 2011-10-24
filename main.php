@@ -166,7 +166,9 @@ IM;
 
 
     function add_custom_box(){
-        $post_id = $_REQUEST['post'];
+        $post_id = -3;
+        if(isset($_REQUEST['post']))
+            $post_id = $_REQUEST['post'];
         if(in_category(1, $post_id))return;
 		$meta_box=$this->meta_box;
 
