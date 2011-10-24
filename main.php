@@ -80,7 +80,8 @@ class wpVoteRate{
             
             global $wpdb, $post;
             $post_id = $post ->ID;
-            if( get_post_meta($post_id, 'vote_checkbox', true) )return $content;
+            
+            if( !in_category(1,$post_id) && !get_post_meta($post_id, 'vote_checkbox', true) )return $content;
              $current_user = wp_get_current_user();
              $user_id = $current_user -> ID;
             $cd = $this->get_vote($post_id, $user_id);
@@ -146,14 +147,14 @@ IM;
     function set_meta(){
 			$this->meta_box = array(
 		'id' => 'vote-meta-box',
-		'title' => "Don't show Grading System",
+		'title' => "Show Grading System",
 		'page' => 'page',
 		'context' => 'normal',
 		'priority' => 'high',
 		'fields' => array(
 		array(
-				'name' => 'Don\'t show Grading System',
-				'desc' => ' Check To disable Grading System',
+				'name' => 'Show Grading System',
+				'desc' => ' Check To enable Grading System',
 				'id' => $this->prefix . 'checkbox',
 				'type' => 'checkbox',
 				'std' => ''
@@ -165,6 +166,8 @@ IM;
 
 
     function add_custom_box(){
+        $post_id = $_REQUEST['post'];
+        if(in_category(1, $post_id))return;
 		$meta_box=$this->meta_box;
 
 		add_meta_box($meta_box['id'], $meta_box['title'], array($this,'show_box'), $meta_box['page'], $meta_box['context'], $meta_box['priority']);
