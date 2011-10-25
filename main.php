@@ -9,7 +9,7 @@
   Author URI: http://sabirul-mostofa.blogspot.com
  */
 
-
+include 'featured-post-widget.php';
 $wpVoteRate = new wpVoteRate();
 
 class wpVoteRate {
@@ -39,6 +39,7 @@ class wpVoteRate {
         add_action('wp_ajax_nopriv_set_user', array($this, 'ajax_set_user'));
         add_action('plugins_loaded', array($this, 'return_image'));
         add_action('add_meta_boxes', array($this, 'add_custom_box'));
+        add_action( 'widgets_init', create_function( '', 'register_widget("Grading_Featured_Post");' ) );
 
         // backwards compatible
         add_action('admin_init', array($this, 'add_custom_box'));
@@ -314,7 +315,11 @@ IM;
         return $val;
     }
 
-    function get_av_image($post_id) {
+    function get_av_image($post_id=-1) {
+        if($post_id == -1){
+            global $post;
+            $post_id = $post ->ID;            
+        }
         $av_grade = $this->get_av_grade($post_id);
         if ($av_grade === null)
             return $this->image_dir . 'none_all_alt.png';
