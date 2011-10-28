@@ -78,7 +78,7 @@ class Grading_Featured_Post extends WP_Widget {
 
                 if (!empty($instance['show_gravatar'])) :
                     echo '<span class="' . esc_attr($instance['gravatar_alignment']) . '">';
-                    echo "<img src=\"", $wpVoteRate -> get_av_image(), "\"/>";
+                    echo '<img style="width:34px;height:33px;" src="', $wpVoteRate -> get_av_image(), '"/>';
                     echo '</span>';
                 endif;
 

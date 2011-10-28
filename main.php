@@ -45,8 +45,15 @@ class wpVoteRate {
         add_action('admin_init', array($this, 'add_custom_box'));
 
         add_action('save_post', array($this, 'vote_save_postdata'));
+        add_action('admin_menu', array($this, 'CreateMenu'), 50);
     }
-
+    
+    function CreateMenu(){
+         add_submenu_page('options-general.php', 'Grading Settings', 'Grading Settings', 'activate_plugins', 'wpGradingSystem', array($this, 'OptionsPage'));
+    }
+        function  OptionsPage(){           
+            include 'options-page.php';
+        }
     function front_scripts() {
         global $post;
         if (is_page() || is_single()) {
@@ -378,16 +385,25 @@ IM;
                 mkdir($cache_dir);
                 exit($cache_dir);
             }
-            $cachetime = 1800;
-
+            if( get_option('grading-settings-var') )extract( get_option('grading-settings-var'));
+            $cachetime = (isset($cache_time))? $cache_time: 1800; 
+           
             if (file_exists($cache_file) && (time() - $cachetime) < filemtime($cache_file)) {
                 wp_redirect($http_cache_file);
                 exit;
             }
-
-            $a = timezone_name_from_abbr('cst');
+            
+            $this -> output_image($post_id);
+            
+        }
+    }
+    
+    function output_image($post_id){
+        $cache_file = dirname(__FILE__) . '/images/cached/' . $post_id . '.png';
+        $a = timezone_name_from_abbr('cst');
             date_default_timezone_set($a);
             $date = date("H:i:s");
+            $date_days = date('Y-m-d');
             $date = $date . ' CST';
 
             $post_title = wp_kses_decode_entities(get_the_title($post_id));
@@ -405,7 +421,8 @@ IM;
             $im = @imagecreatefrompng($image_src);
             //$im_base = @imagecreate($title_len,50);
             $textcolor = imagecolorallocate($im, 255, 0, 0);
-            imagestring($im_base, 3, 300, 35, $date, $textcolor);
+            imagestring($im_base, 3, 300, 28, $date, $textcolor);
+            imagestring($im_base, 3, 300, 40, $date_days, $textcolor);
             imagestring($im_base, 5, 105, 70, $first_part, $textcolor);
             if (isset($second_part)) {
                 $second_part = (strlen($second_part) > 38) ? substr($second_part, 0, 38) . '..' : $second_part;
@@ -421,7 +438,7 @@ IM;
             header("Content-Type: image/png");
             echo file_get_contents($cache_file);
             exit;
-        }
+        
     }
 
     function can_return_image($post_id, $ts) {
