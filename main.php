@@ -119,9 +119,13 @@ class wpVoteRate {
 HDS;
             $img_src = site_url() . '/?show-grade=1&post=' . $post_id;
             $pre_text = htmlentities("<img src=\"$img_src\"/>");
+            $report_image = $this ->reurn_report_link($post_id);
+            $nonce = wp_create_nonce(time());
+           
 
             $image_div = <<<IM
    <div class='copy-image-src' >
+       <img src="$report_image"/>
          <h2> Show the Grade in your website: </h2>
          <input type="button" value="Show Image Source" id="show-image-button"/>
        <div id="show-var-image"></div>
@@ -398,7 +402,7 @@ IM;
         }
     }
     
-    function output_image($post_id){
+    function output_image($post_id, $output_direct=true){
         $cache_file = dirname(__FILE__) . '/images/cached/' . $post_id . '.png';
         $a = timezone_name_from_abbr('cst');
             date_default_timezone_set($a);
@@ -435,9 +439,20 @@ IM;
             // imagepng($im);
             //echo file_get_contents($image_src);
             imagepng($im_base, $cache_file);
+            if($output_direct){
             header("Content-Type: image/png");
             echo file_get_contents($cache_file);
+            
             exit;
+            
+            }    
+    }
+    
+    function reurn_report_link($post_id){
+//        if(wp_verify_nonce($_REQUEST['nonce'])){
+           $this ->output_image($post_id,false);
+           return  plugins_url('/', __FILE__) . 'images/cached/'.$post_id.'.png';
+//           }       
         
     }
 
