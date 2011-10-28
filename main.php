@@ -39,7 +39,7 @@ class wpVoteRate {
         add_action('wp_ajax_nopriv_set_user', array($this, 'ajax_set_user'));
         add_action('plugins_loaded', array($this, 'return_image'));
         add_action('add_meta_boxes', array($this, 'add_custom_box'));
-        add_action( 'widgets_init', create_function( '', 'register_widget("Grading_Featured_Post");' ) );
+        add_action('widgets_init', create_function('', 'register_widget("Grading_Featured_Post");'));
 
         // backwards compatible
         add_action('admin_init', array($this, 'add_custom_box'));
@@ -47,13 +47,15 @@ class wpVoteRate {
         add_action('save_post', array($this, 'vote_save_postdata'));
         add_action('admin_menu', array($this, 'CreateMenu'), 50);
     }
-    
-    function CreateMenu(){
-         add_submenu_page('options-general.php', 'Grading Settings', 'Grading Settings', 'activate_plugins', 'wpGradingSystem', array($this, 'OptionsPage'));
+
+    function CreateMenu() {
+        add_submenu_page('options-general.php', 'Grading Settings', 'Grading Settings', 'activate_plugins', 'wpGradingSystem', array($this, 'OptionsPage'));
     }
-        function  OptionsPage(){           
-            include 'options-page.php';
-        }
+
+    function OptionsPage() {
+        include 'options-page.php';
+    }
+
     function front_scripts() {
         global $post;
         if (is_page() || is_single()) {
@@ -119,9 +121,9 @@ class wpVoteRate {
 HDS;
             $img_src = site_url() . '/?show-grade=1&post=' . $post_id;
             $pre_text = htmlentities("<img src=\"$img_src\"/>");
-            $report_image = $this ->reurn_report_link($post_id);
+            $report_image = $this->reurn_report_link($post_id);
             $nonce = wp_create_nonce(time());
-           
+
 
             $image_div = <<<IM
    <div class='copy-image-src' >
@@ -327,9 +329,9 @@ IM;
     }
 
     function get_av_image($post_id=-1) {
-        if($post_id == -1){
+        if ($post_id == -1) {
             global $post;
-            $post_id = $post ->ID;            
+            $post_id = $post->ID;
         }
         $av_grade = $this->get_av_grade($post_id);
         if ($av_grade === null)
@@ -389,71 +391,75 @@ IM;
                 mkdir($cache_dir);
                 exit($cache_dir);
             }
-            if( get_option('grading-settings-var') )extract( get_option('grading-settings-var'));
-            $cachetime = (isset($cache_time))? $cache_time: 1800; 
-           
+            if (get_option('grading-settings-var'))
+                extract(get_option('grading-settings-var'));
+            $cachetime = (isset($cache_time)) ? $cache_time : 1800;
+
             if (file_exists($cache_file) && (time() - $cachetime) < filemtime($cache_file)) {
                 wp_redirect($http_cache_file);
                 exit;
             }
-            
-            $this -> output_image($post_id);
-            
+
+            $this->output_image($post_id);
         }
     }
-    
-    function output_image($post_id, $output_direct=true){
+
+    function output_image($post_id, $output_direct=true) {
         $cache_file = dirname(__FILE__) . '/images/cached/' . $post_id . '.png';
         $a = timezone_name_from_abbr('cst');
-            date_default_timezone_set($a);
-            $date = date("H:i:s");
-            $date_days = date('Y-m-d');
-            $date = $date . ' CST';
+        date_default_timezone_set($a);
+        $date = date("H:i:s");
+        $date_days = date('Y-m-d');
+        $date = $date . ' CST';
 
-            $post_title = wp_kses_decode_entities(get_the_title($post_id));
+        $post_title = wp_kses_decode_entities(get_the_title($post_id));
 
-            $first_part = substr($post_title, 0, 30);
-            if (strlen($post_title) > 30) {
-                $second_part = substr($post_title, 30, strlen($post_title));
-            }
-            //calculating image length 50 image width 95 timestamp width
-            $title_len = strlen($post_title) * 10 + 50 + 220;
-            $title_len = ($title_len > 800) ? 800 : $title_len;
-            $image_src = $this->get_av_image($post_id);
-            $im_src_base = plugins_url('/', __FILE__) . 'images/test-card3.png';
-            $im_base = @imagecreatefrompng($im_src_base);
-            $im = @imagecreatefrompng($image_src);
-            //$im_base = @imagecreate($title_len,50);
-            $textcolor = imagecolorallocate($im, 255, 0, 0);
-            imagestring($im_base, 3, 300, 28, $date, $textcolor);
-            imagestring($im_base, 3, 300, 40, $date_days, $textcolor);
-            imagestring($im_base, 5, 105, 70, $first_part, $textcolor);
-            if (isset($second_part)) {
-                $second_part = (strlen($second_part) > 38) ? substr($second_part, 0, 38) . '..' : $second_part;
-                imagestring($im_base, 5, 10, 85, $second_part, $textcolor);
-            }
-            imagecopymerge($im_base, $im, 110, 20, 0, 0, 35, 34, 100);
+        $first_part = substr($post_title, 0, 30);
+        if (strlen($post_title) > 30) {
+            $second_part = substr($post_title, 30, strlen($post_title));
+        }
+        //calculating image length 50 image width 95 timestamp width
+        $title_len = strlen($post_title) * 10 + 50 + 220;
+        $title_len = ($title_len > 800) ? 800 : $title_len;
+        $image_src = $this->get_av_image($post_id);
+        $im_src_base = plugins_url('/', __FILE__) . 'images/test-card3.png';
+        $im_base = @imagecreatefrompng($im_src_base);
+        $im = @imagecreatefrompng($image_src);
+        //$im_base = @imagecreate($title_len,50);
+        $textcolor = imagecolorallocate($im, 255, 0, 0);
+        imagestring($im_base, 3, 300, 28, $date, $textcolor);
+        imagestring($im_base, 3, 300, 40, $date_days, $textcolor);
+        imagestring($im_base, 5, 105, 70, $first_part, $textcolor);
+        if (isset($second_part)) {
+            $second_part = (strlen($second_part) > 38) ? substr($second_part, 0, 38) . '..' : $second_part;
+            imagestring($im_base, 5, 10, 85, $second_part, $textcolor);
+        }
+        imagecopymerge($im_base, $im, 110, 20, 0, 0, 35, 34, 100);
 
-            // Write the string at the top left
-            // imagestring($im, 5, 0, 0, $post_title, $textcolor);
-            // imagepng($im);
-            //echo file_get_contents($image_src);
-            imagepng($im_base, $cache_file);
-            if($output_direct){
+        // Write the string at the top left
+        // imagestring($im, 5, 0, 0, $post_title, $textcolor);
+        // imagepng($im);
+        //echo file_get_contents($image_src);
+        imagepng($im_base, $cache_file);
+        if ($output_direct) {
             header("Content-Type: image/png");
             echo file_get_contents($cache_file);
-            
+
             exit;
-            
-            }    
+        }
     }
-    
-    function reurn_report_link($post_id){
-//        if(wp_verify_nonce($_REQUEST['nonce'])){
-           $this ->output_image($post_id,false);
-           return  plugins_url('/', __FILE__) . 'images/cached/'.$post_id.'.png';
-//           }       
+
+    function reurn_report_link($post_id) {
+        $cache_file = dirname(__FILE__) . '/images/cached/' . $post_id . '.png';
+        if (get_option('grading-settings-var'))
+            extract(get_option('grading-settings-var'));
         
+        $cachetime = (isset($cache_time)) ? $cache_time : 1800;
+
+        if (!is_file($cache_file) || (time() - $cachetime) < filemtime($cache_file))
+            $this->output_image($post_id, false);
+
+        return plugins_url('/', __FILE__) . 'images/cached/' . $post_id . '.png';
     }
 
     function can_return_image($post_id, $ts) {
