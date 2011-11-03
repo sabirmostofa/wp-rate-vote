@@ -283,6 +283,10 @@ IM;
             $wpdb->update($this->table_av, array('average_grade' => $av_rating, 'grade_count' => $vote_count, 'last_added' => $date), array('post_id' => $post_id));
         else
             $wpdb->insert($this->table_av, array('post_id' => $post_id, 'average_grade' => $av_rating, 'grade_count' => $vote_count), array('%d', '%f', '%d'));
+    
+        
+        update_post_meta($post_id,'post_av_rating',$av_rating);
+        
     }
 
     function get_av_grade($post_id) {
