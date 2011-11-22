@@ -127,7 +127,7 @@ HDS;
 
             $image_div = <<<IM
    <div class='copy-image-src' >
-       <img src="$report_image"/>
+       <img class="wsos-reportcard-single" src="$report_image"/>
          <h2> Show the Grade in your website: </h2>
          <input type="button" value="Show Image Source" id="show-image-button"/>
        <div id="show-var-image"></div>
